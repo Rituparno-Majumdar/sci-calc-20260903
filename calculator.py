@@ -226,9 +226,12 @@ class ScientificCalculator:
             raise ValueError("log domain error: a must be > 0")
         if b_f <= 0 or b_f == 1:
             raise ValueError("log domain error: base must be >0 and !=1")
-        r = math.log(a_f, b_f) if b_f != math.e else math.log(a_f)
-        if b_f == 10:
+        if b_f == math.e:
+            r = math.log(a_f)
+        elif b_f == 10:
             r = math.log10(a_f)
+        else:
+            r = math.log(a_f, b_f)
         self._rec("log", (a, base), r)
         return r
 
@@ -250,125 +253,152 @@ class ScientificCalculator:
     def history_alias(self) -> List[Dict[str, Any]]:
         return self.get_history()
 
+    # canonical alias: c.history() mirrors module history()
+    def history(self) -> List[Dict[str, Any]]:  # type: ignore[override]
+        return self.get_history()
+
 
 # ── CLI (click + rich) ─────────────────────────────────────────────────────
 try:
     import click
+    HAS_CLICK = True
+except ImportError:  # pragma: no cover
+    HAS_CLICK = False
+    click = None  # type: ignore
+
+try:
     from rich.console import Console
     from rich.table import Table
 
     console = Console()
     HAS_RICH = True
-except ImportError:
+except ImportError:  # pragma: no cover
     HAS_RICH = False
     console = None  # type: ignore
+    Console = None  # type: ignore
+    Table = None  # type: ignore
 
-if HAS_RICH:
+if HAS_CLICK:
 
     @click.group()
     def cli():
         """Scientific Calculator CLI — sci-calc-20260903"""
         pass
 
-    @cli.command()
+    @cli.command("add")
     @click.argument("a", type=float)
     @click.argument("b", type=float)
     def add_cmd(a, b):
-        console.print(f"[green]add({a}, {b}) = {add(a,b)}[/green]")
+        (console.print if HAS_RICH else click.echo)(f"add({a}, {b}) = {add(a,b)}")
 
-    @cli.command()
+    @cli.command("sub")
     @click.argument("a", type=float)
     @click.argument("b", type=float)
     def sub_cmd(a, b):
-        console.print(f"[green]sub({a}, {b}) = {sub(a,b)}[/green]")
+        (console.print if HAS_RICH else click.echo)(f"sub({a}, {b}) = {sub(a,b)}")
 
-    @cli.command()
+    @cli.command("mul")
     @click.argument("a", type=float)
     @click.argument("b", type=float)
     def mul_cmd(a, b):
-        console.print(f"[green]mul({a}, {b}) = {mul(a,b)}[/green]")
+        (console.print if HAS_RICH else click.echo)(f"mul({a}, {b}) = {mul(a,b)}")
 
-    @cli.command()
+    @cli.command("div")
     @click.argument("a", type=float)
     @click.argument("b", type=float)
     def div_cmd(a, b):
-        console.print(f"[green]div({a}, {b}) = {div(a,b)}[/green]")
+        (console.print if HAS_RICH else click.echo)(f"div({a}, {b}) = {div(a,b)}")
 
-    @cli.command()
+    @cli.command("pow")
     @click.argument("a", type=float)
     @click.argument("b", type=float)
     def pow_cmd(a, b):
-        console.print(f"[green]pow({a}, {b}) = {pow(a,b)}[/green]")
+        (console.print if HAS_RICH else click.echo)(f"pow({a}, {b}) = {pow(a,b)}")
 
-    @cli.command()
+    @cli.command("sqrt")
     @click.argument("a", type=float)
     def sqrt_cmd(a):
-        console.print(f"[green]sqrt({a}) = {sqrt(a)}[/green]")
+        (console.print if HAS_RICH else click.echo)(f"sqrt({a}) = {sqrt(a)}")
 
-    @cli.command()
+    @cli.command("sin")
     @click.argument("a", type=float)
     @click.option("--deg", is_flag=True, help="Input in degrees")
     def sin_cmd(a, deg):
         if deg:
             set_degree_mode(True)
-        console.print(f"[green]sin({a}) = {sin(a)}[/green]")
-        if deg:
-            set_degree_mode(False)
+        try:
+            out = f"sin({a}) = {sin(a)}"
+            (console.print if HAS_RICH else click.echo)(f"[green]{out}[/green]" if HAS_RICH else out)
+        finally:
+            if deg:
+                set_degree_mode(False)
 
-    @cli.command()
+    @cli.command("cos")
     @click.argument("a", type=float)
-    @click.option("--deg", is_flag=True)
+    @click.option("--deg", is_flag=True, help="Input in degrees")
     def cos_cmd(a, deg):
         if deg:
             set_degree_mode(True)
-        console.print(f"[green]cos({a}) = {cos(a)}[/green]")
-        if deg:
-            set_degree_mode(False)
+        try:
+            out = f"cos({a}) = {cos(a)}"
+            (console.print if HAS_RICH else click.echo)(f"[green]{out}[/green]" if HAS_RICH else out)
+        finally:
+            if deg:
+                set_degree_mode(False)
 
-    @cli.command()
+    @cli.command("tan")
     @click.argument("a", type=float)
-    @click.option("--deg", is_flag=True)
+    @click.option("--deg", is_flag=True, help="Input in degrees")
     def tan_cmd(a, deg):
         if deg:
             set_degree_mode(True)
-        console.print(f"[green]tan({a}) = {tan(a)}[/green]")
-        if deg:
-            set_degree_mode(False)
+        try:
+            out = f"tan({a}) = {tan(a)}"
+            (console.print if HAS_RICH else click.echo)(f"[green]{out}[/green]" if HAS_RICH else out)
+        finally:
+            if deg:
+                set_degree_mode(False)
 
-    @cli.command()
+    @cli.command("log")
     @click.argument("a", type=float)
     @click.option("--base", default=math.e, type=float, help="Log base (default e)")
     def log_cmd(a, base):
-        console.print(f"[green]log({a}, base={base}) = {log(a, base)}[/green]")
+        out = f"log({a}, base={base}) = {log(a, base)}"
+        (console.print if HAS_RICH else click.echo)(f"[green]{out}[/green]" if HAS_RICH else out)
 
-    @cli.command()
+    @cli.command("exp")
     @click.argument("a", type=float)
     def exp_cmd(a):
-        console.print(f"[green]exp({a}) = {exp(a)}[/green]")
+        out = f"exp({a}) = {exp(a)}"
+        (console.print if HAS_RICH else click.echo)(f"[green]{out}[/green]" if HAS_RICH else out)
 
-    @cli.command()
+    @cli.command("history")
     def history_cmd():
         h = history()
         if not h:
-            console.print("[yellow]No history yet.[/yellow]")
+            (console.print if HAS_RICH else click.echo)("[yellow]No history yet.[/yellow]" if HAS_RICH else "No history yet.")
             return
-        table = Table(title="Calculation History")
-        table.add_column("#", style="dim")
-        table.add_column("Operation")
-        table.add_column("Args")
-        table.add_column("Result", style="green")
-        for i, e in enumerate(h, 1):
-            table.add_row(str(i), e["op"], str(e["args"]), str(e["result"]))
-        console.print(table)
+        if HAS_RICH:
+            table = Table(title="Calculation History")
+            table.add_column("#", style="dim")
+            table.add_column("Operation")
+            table.add_column("Args")
+            table.add_column("Result", style="green")
+            for i, e in enumerate(h, 1):
+                table.add_row(str(i), e["op"], str(e["args"]), str(e["result"]))
+            console.print(table)
+        else:
+            for i, e in enumerate(h, 1):
+                click.echo(f"{i}. {e['op']}{e['args']} = {e['result']}")
 
-    @cli.command()
+    @cli.command("clear")
     def clear_cmd():
         clear_history()
-        console.print("[yellow]History cleared.[/yellow]")
+        (console.print if HAS_RICH else click.echo)("[yellow]History cleared.[/yellow]" if HAS_RICH else "History cleared.")
 
 
 if __name__ == "__main__":
-    if HAS_RICH:
+    if HAS_CLICK:
         cli()
     else:
         # Fallback REPL when click/rich not installed
