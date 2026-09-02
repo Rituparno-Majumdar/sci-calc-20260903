@@ -1,0 +1,62 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "sci-calc-20260903"
+version = "1.0.0"
+description = "Production-grade scientific calculator with dual API, rich interactive CLI/REPL, and robust error handling"
+readme = "README.md"
+requires-python = ">=3.8"
+license = { text = "MIT" }
+authors = [
+    { name = "Rituparno Majumdar", email = "rituparno.majumdar@github.com" }
+]
+keywords = [
+    "scientific-calculator",
+    "math",
+    "cli",
+    "rich",
+    "click",
+    "repl",
+    "trigonometry",
+    "history"
+]
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "Intended Audience :: Developers",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Scientific/Engineering :: Mathematics",
+    "Operating System :: OS Independent",
+]
+dependencies = [
+    "click>=8.0.0",
+    "rich>=13.0.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.0.0",
+    "black>=23.0.0",
+    "mypy>=1.0.0",
+]
+web = [
+    "streamlit>=1.25.0",
+    "pandas>=2.0.0",
+]
+
+[project.scripts]
+sci-calc = "ui:cli"
+sci-calc-core = "calculator:cli"
+
+[project.urls]
+Homepage = "https://github.com/Rituparno-Majumdar/sci-calc-20260903"
+Repository = "https://github.com/Rituparno-Majumdar/sci-calc-20260903"
+"Bug Tracker" = "https://github.com/Rituparno-Majumdar/sci-calc-20260903/issues"

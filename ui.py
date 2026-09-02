@@ -23,6 +23,13 @@ except ImportError:
 
 import calculator as calc
 
+try:
+    import constants
+    HAS_CONSTANTS = True
+except ImportError:
+    HAS_CONSTANTS = False
+
+
 # ── 1) Rich history table (reusable) ─────────────────────────────────────
 def history_table(entries=None, title="Calculation History") -> Table | str:
     """Return rich Table for history entries; fallback to plain text."""
@@ -218,10 +225,17 @@ try:
                 print("cleared")
                 continue
             if s in ("help", "?"):
-                print("add sub mul div pow sqrt sin cos tan log exp | history clear | q")
+                print("add sub mul div pow sqrt sin cos tan log exp | history clear constants | q")
                 continue
             try:
-                allowed = {"add": calc.add, "sub": calc.sub, "mul": calc.mul, "div": calc.div, "pow": calc.pow, "sqrt": calc.sqrt, "sin": calc.sin, "cos": calc.cos, "tan": calc.tan, "log": calc.log, "exp": calc.exp, "math": math, "history": calc.history}
+                allowed = {
+                    "add": calc.add, "sub": calc.sub, "mul": calc.mul, "div": calc.div,
+                    "pow": calc.pow, "sqrt": calc.sqrt, "sin": calc.sin, "cos": calc.cos,
+                    "tan": calc.tan, "log": calc.log, "exp": calc.exp, "math": math,
+                    "history": calc.history
+                }
+                if HAS_CONSTANTS:
+                    allowed.update(constants.ALLOWED_CONSTS)
                 r = eval(s, {"__builtins__": {}}, allowed)
                 if HAS_RICH:
                     console.print(f"[green]= {r}[/green]")
@@ -230,7 +244,40 @@ try:
             except Exception as e:
                 print(f"Error: {e}")
 
+    @cli.command("constants")
+    @click.option("--category", type=click.Choice(["all", "math", "physics"]), default="all", help="Filter constants by category")
+    def constants_cmd(category):
+        """Display table of physical and mathematical constants."""
+        if not HAS_CONSTANTS:
+            print("constants.py module not found.")
+            return
+        if HAS_RICH:
+            table = Table(title=f"Scientific Constants ({category.upper()})", header_style="bold magenta")
+            table.add_column("Symbol / Key", style="cyan", no_wrap=True)
+            table.add_column("Value", style="bold green", justify="right")
+            table.add_column("Description", style="white")
+
+            items = []
+            if category in ("all", "math"):
+                for k, v in constants.MATHEMATICAL_CONSTANTS.items():
+                    items.append((k, v, "Mathematical Constant"))
+            if category in ("all", "physics"):
+                for k, v in constants.PHYSICAL_CONSTANTS.items():
+                    items.append((k, v, "Physical Constant"))
+
+            descriptions = dict((k, desc) for k, _, desc in constants.describe_constants())
+            for k, v, cat in items:
+                desc = descriptions.get(k, cat)
+                val_str = f"{v:.8g}" if isinstance(v, float) and abs(v) < 1e-4 or abs(v) > 1e4 else str(v)
+                table.add_row(k, val_str, desc)
+            console.print(table)
+            console.print(f"[dim]Total: {len(items)} constants loaded[/dim]")
+        else:
+            for k, v in constants.ALLOWED_CONSTS.items():
+                print(f"{k} = {v}")
+
     HAS_CLICK = True
+
 except ImportError:
     HAS_CLICK = False
     cli = None  # type: ignore

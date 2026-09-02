@@ -112,3 +112,17 @@ def test_chained_history_global_and_instance():
     assert len(calc.history()) == 1
     calc.add(5, 5)
     assert len(calc.history()) == 2
+
+
+def test_constants():
+    import constants
+    assert constants.PHYSICAL_CONSTANTS["mp"] == 1.67262192369e-27
+    assert constants.PHYSICAL_CONSTANTS["c"] == 299792458.0
+    assert constants.MATHEMATICAL_CONSTANTS["pi"] == math.pi
+    assert constants.ALLOWED_CONSTS["phi"] == pytest.approx(1.6180339887, rel=1e-5)
+    all_consts = constants.list_constants()
+    assert "c" in all_consts
+    assert "pi" in all_consts
+    descriptions = constants.describe_constants()
+    assert len(descriptions) > 0
+

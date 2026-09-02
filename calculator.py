@@ -18,7 +18,14 @@ from typing import List, Dict, Any, Union
 
 Number = Union[int, float]
 
+try:
+    import constants
+    ALLOWED_CONSTS = constants.ALLOWED_CONSTS
+except ImportError:
+    ALLOWED_CONSTS = {}
+
 # ── History store ──────────────────────────────────────────────────────────
+
 _history: List[Dict[str, Any]] = []
 _trig_in_degrees: bool = False  # global toggle; class instance can override
 
@@ -426,6 +433,8 @@ if __name__ == "__main__":
             try:
                 # safe eval with limited globals
                 allowed = {"add": add, "sub": sub, "mul": mul, "div": div, "pow": pow, "sqrt": sqrt, "sin": sin, "cos": cos, "tan": tan, "log": log, "exp": exp, "math": math}
+                allowed.update(ALLOWED_CONSTS)
                 print(eval(expr, {"__builtins__": {}}, allowed))
+
             except Exception as e:
                 print(f"Error: {e}")
