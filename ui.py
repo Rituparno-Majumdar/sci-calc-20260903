@@ -52,7 +52,9 @@ def history_table(entries=None, title="Calculation History") -> Table | str:
         args_s = ", ".join(str(a) for a in e["args"])
         # highlight errors if any (stored result could be exception string)
         res_s = f"{e['result']:.6g}" if isinstance(e["result"], float) else str(e["result"])
-        table.add_row(str(i), e["op"], f"({args_s})", res_s)
+        # B demo: highlight factorial in bold yellow
+        op_style = "bold yellow" if e["op"] == "factorial" else "cyan"
+        table.add_row(str(i), f"[{op_style}]{e['op']}[/{op_style}]", f"({args_s})", res_s)
     return table
 
 
@@ -68,7 +70,7 @@ def render_history(entries=None) -> None:
 
 def banner() -> None:
     if HAS_RICH:
-        console.print(Panel(Text("sci-calc-20260903 — Scientific Calculator", justify="center", style="bold white on blue"), subtitle="add sub mul div pow sqrt sin cos tan log exp | history"))
+        console.print(Panel(Text("sci-calc-20260903 — Scientific Calculator", justify="center", style="bold white on blue"), subtitle="add sub mul div pow sqrt sin cos tan log exp factorial | history — B demo"))
     else:
         print("sci-calc-20260903 — Scientific Calculator")
 

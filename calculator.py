@@ -145,6 +145,25 @@ def exp(a: Number) -> float:
     return result
 
 
+def factorial(n: Number) -> float:
+    """Factorial of n. Validates int-like, raises TypeError/ValueError accordingly."""
+    # Type validation: must be int or float
+    if not isinstance(n, (int, float)):
+        raise TypeError("factorial() only accepts numeric types")
+    # bool is subclass of int; treat as numeric but keep consistent with int-like check
+    # For float, ensure it represents an integer value
+    if isinstance(n, float):
+        if not n.is_integer():
+            raise ValueError("factorial() only accepts integral values")
+    # At this point n is int-like
+    n_int = int(n)
+    if n_int < 0:
+        raise ValueError("factorial() not defined for negative values")
+    result = float(math.factorial(n_int))
+    _record("factorial", (n,), result)
+    return result
+
+
 # ── History API ────────────────────────────────────────────────────────────
 def history() -> List[Dict[str, Any]]:
     """Return shallow copy of operation history."""
@@ -245,6 +264,20 @@ class ScientificCalculator:
     def exp(self, a: Number) -> float:
         r = math.exp(float(a))
         self._rec("exp", (a,), r)
+        return r
+
+    def factorial(self, n: Number) -> float:
+        """Factorial of n — parity with module-level factorial()."""
+        if not isinstance(n, (int, float)):
+            raise TypeError("factorial() only accepts numeric types")
+        if isinstance(n, float):
+            if not n.is_integer():
+                raise ValueError("factorial() only accepts integral values")
+        n_int = int(n)
+        if n_int < 0:
+            raise ValueError("factorial() not defined for negative values")
+        r = float(math.factorial(n_int))
+        self._rec("factorial", (n,), r)
         return r
 
     def get_history(self) -> List[Dict[str, Any]]:
@@ -377,6 +410,12 @@ if HAS_CLICK:
     @click.argument("a", type=float)
     def exp_cmd(a):
         out = f"exp({a}) = {exp(a)}"
+        (console.print if HAS_RICH else click.echo)(f"[green]{out}[/green]" if HAS_RICH else out)
+
+    @cli.command("factorial")
+    @click.argument("n", type=int)
+    def factorial_cmd(n):
+        out = f"factorial({n}) = {factorial(n)}"
         (console.print if HAS_RICH else click.echo)(f"[green]{out}[/green]" if HAS_RICH else out)
 
     @cli.command("history")
