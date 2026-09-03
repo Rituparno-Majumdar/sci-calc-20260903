@@ -43,6 +43,7 @@
 - [Verification & Automated CI](#-verification--automated-ci)
 - [Multi-Agent Provenance](#-multi-agent-provenance)
 - [Review Checklist](#-review-checklist)
+- [Contributors](#-contributors)
 - [License](#-license)
 
 ---
@@ -397,9 +398,19 @@ This codebase was developed through an orchestrated multi-agent collaborative pi
 
 ---
 
+## 👥 Contributors
+
+| Contributor | Role | GitHub |
+|---|---|---|
+| **Rituparno Majumdar** | Project Lead — TRCSC/BIS Indology, CES architecture, multi-agent orchestration | [@Rituparno-Majumdar](https://github.com/Rituparno-Majumdar) |
+
+> All code, constants (CODATA 2018), tests (27 passed), and documentation are authored and reviewed by **Rituparno Majumdar**. Contributions welcome via Fork → PR — contributors will be listed here.
+
+---
+
 ## 📜 License
 
-Distributed under the **MIT License**. See [`LICENSE`](file:///tmp/sci-calc-20260903/LICENSE) for details.
+Distributed under the **MIT License**. See [`LICENSE`](LICENSE) for details.
 
 **Author:** [Rituparno Majumdar](https://github.com/Rituparno-Majumdar)  
 **Date:** 2026-09-03
