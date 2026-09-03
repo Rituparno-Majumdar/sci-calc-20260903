@@ -75,6 +75,7 @@ __all__ = [
     "ALLOWED_CONSTS",
     "list_constants",
     "describe_constants",
+    "is_mp_correct",
 ]
 
 
@@ -113,3 +114,8 @@ def describe_constants() -> List[Tuple[str, float, str]]:
         "atm": "Standard atmospheric pressure (Pa)",
     }
     return [(k, v, descriptions.get(k, "")) for k, v in ALLOWED_CONSTS.items()]
+
+
+def is_mp_correct() -> bool:
+    """Return True if proton mass equals CODATA 2018 invariant."""
+    return PHYSICAL_CONSTANTS["mp"] == 1.67262192369e-27

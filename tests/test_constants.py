@@ -49,3 +49,9 @@ def test_other_physical_constants_sanity():
     assert constants.PHYSICAL_CONSTANTS["me"] == 9.1093837015e-31
     assert constants.PHYSICAL_CONSTANTS["mn"] == 1.67492749804e-27
     assert constants.PHYSICAL_CONSTANTS["c"] == 299792458.0
+
+
+def test_is_mp_correct_helper():
+    """is_mp_correct() returns True for correct CODATA value."""
+    assert constants.is_mp_correct() is True
+    assert constants.is_mp_correct() == (constants.PHYSICAL_CONSTANTS["mp"] == 1.67262192369e-27)
